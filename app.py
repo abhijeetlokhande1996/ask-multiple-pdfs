@@ -13,7 +13,7 @@ from pathlib import Path
 
 INDEX_NAME = "faiss_index"
 embeddings = OpenAIEmbeddings()
-vectorstore = FAISS.load_local(INDEX_NAME, embeddings)
+# vectorstore = FAISS.load_local(INDEX_NAME, embeddings)
 
 
 def get_pdf_text(pdf_docs):
@@ -38,7 +38,7 @@ def get_text_chunks(text):
 
 def get_vectorstore(text_chunks):
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
-    vectorstore.save_local(INDEX_NAME)
+    # vectorstore.save_local(INDEX_NAME)
     return vectorstore
 
 
@@ -87,28 +87,23 @@ def main():
     if user_question:
         handle_userinput(user_question)
 
-    # with st.sidebar:
-    #     st.subheader("Your documents")
-    #     pdf_docs = st.file_uploader(
-    #         "Upload your PDFs here and click on 'Process'", accept_multiple_files=True)
-    #     if st.button("Process"):
-    #         with st.spinner("Processing"):
-    #             # get pdf text
-    #             raw_text = get_pdf_text(pdf_docs)
+    with st.sidebar:
+        st.subheader("Your documents")
+        pdf_docs = st.file_uploader(
+            "Upload your PDFs here and click on 'Process'", accept_multiple_files=True)
+        if st.button("Process"):
+            with st.spinner("Processing"):
+                # get pdf text
+                raw_text = get_pdf_text(pdf_docs)
 
-    #             # get the text chunks
-    #             text_chunks = get_text_chunks(raw_text)
+                # get the text chunks
+                text_chunks = get_text_chunks(raw_text)
 
-    #             # if not Path(INDEX_NAME).exists():
-    #             #     print("--- CREATING ----")
-    #             #     # create vector store
-    #             #     vectorstore = get_vectorstore(text_chunks)
-    #             # else:
-    #             #     print("--- READING ----")
-    #             #     vectorstore = FAISS.load_local(INDEX_NAME, embeddings)
+                vectorstore = get_vectorstore(text_chunks)
 
-    #             # create conversation chain
-    #             # st.session_state.conversation = get_conversation_chain(vectorstore)
+                # create conversation chain
+                st.session_state.conversation = get_conversation_chain(
+                    vectorstore)
 
 
 if __name__ == '__main__':
